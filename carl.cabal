@@ -23,7 +23,10 @@ Library
     Carl.Struct,
     Carl.Struct.Matrix,
     Carl.Struct.Permutation,
-    Carl.Struct.Polynomial
+    Carl.Struct.Polynomial,
+    Carl.Write,
+    Carl.Write.LaTeX,
+    Carl.Write.Unicode,
     Carl.AlgErr,
     Carl.Bool,
     Carl.Canon,
