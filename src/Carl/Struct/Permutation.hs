@@ -23,7 +23,8 @@ import Carl.Canon
 import Carl.Algebra.Group
 
 import Control.Monad (foldM)
-import Data.List (minimumBy, inits, tails, group, sortBy, sort, union, intersperse, permutations)
+import Data.List (minimumBy, inits, tails, group, sortBy, sort, union,
+  intersperse, permutations)
 
 
 {------------}

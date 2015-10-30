@@ -20,7 +20,8 @@ module Carl.Algebra.Ring (
   AlgErr(..),
 
   Ringoid,
-    rAdd, rMul, rNeg, rZero, rIsZero, rSub, rSum, rDot, rEQ, rProd, rNeutOf, rLAnnOf, rRAnnOf,
+    rAdd, rMul, rNeg, rZero, rIsZero, rSub, rSum, rDot, rEQ, rProd,
+    rNeutOf, rLAnnOf, rRAnnOf,
 
     rAddT, rMulT, rNegT, rSubT, rSumT, rDotT,
 
@@ -39,9 +40,11 @@ module Carl.Algebra.Ring (
     rAbsT, rMinT, rMaxT, rMinimT, rMaximT,
 
   URingoid,
-    rOne, rIsOne, rUProd, rInjInt, rChoose, rInv, rDiv, rPosPow, rPow, rMean, rIsUnit, rLOneOf, rROneOf,
+    rOne, rIsOne, rUProd, rInjInt, rChoose, rInv, rDiv, rPosPow,
+    rPow, rMean, rIsUnit, rLOneOf, rROneOf,
 
-    rDivT, rUProdT, rChooseT, rPowT, rMeanT, rIntMeanT, rMeanDevT, rIntMeanDevT, rInvT, rPosPowT,
+    rDivT, rUProdT, rChooseT, rPowT, rMeanT, rIntMeanT, rMeanDevT,
+    rIntMeanDevT, rInvT, rPosPowT,
 
   URingoidAssoc,
     rAssoc,
