@@ -1,0 +1,7 @@
+# Haskell
+dist
+.hpc
+*.tix
+
+# Linux backup files
+*~

@@ -1,0 +1,47 @@
+Name:           carl
+Version:        0.0.0
+Cabal-Version:  >= 1.2
+License:        GPL-3
+License-File:   LICENSE
+Copyright:      (c) 2015 Nathan Bloomfield
+Author:         Nathan Bloomfield
+Synopsis:       A simple algebra library
+Stability:      Experimental
+Build-Type:     Simple
+
+Library
+  exposed-modules:
+    Carl,
+    Carl.Data,
+    Carl.Data.Rat,
+    Carl.Data.Monomial,
+    Carl.Data.Natural,
+    Carl.Data.ZZMod,
+    Carl.Algebra,
+    Carl.Algebra.Group,
+    Carl.Algebra.Ring,
+    Carl.Struct,
+    Carl.Struct.Matrix,
+    Carl.Struct.Permutation,
+    Carl.Struct.Polynomial
+    Carl.AlgErr,
+    Carl.Bool,
+    Carl.Canon,
+    Carl.Either,
+    Carl.List,
+    Carl.Monad,
+    Carl.Orders,
+    Carl.Pair,
+    Carl.String
+  hs-source-dirs: src/
+  build-depends:  base, parsec, containers, regex-posix,
+                  random-fu, rvar, random-extras,
+                  transformers, mtl, random, directory,
+                  monadlist, primes, gtk, tostring
+
+Test-Suite carl-test
+  type:           exitcode-stdio-1.0
+  main-is:        Tests/Main.hs
+  hs-source-dirs: test/, src/
+  ghc-options:    -main-is Tests.Main -fforce-recomp
+  build-depends:  base, QuickCheck, tasty, tasty-quickcheck
