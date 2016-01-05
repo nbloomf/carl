@@ -1,5 +1,5 @@
 {---------------------------------------------------------------------}
-{- Copyright 2015, 2016 Nathan Bloomfield                            -}
+{- Copyright 2016 Nathan Bloomfield                                  -}
 {-                                                                   -}
 {- This file is part of Carl.                                        -}
 {-                                                                   -}
@@ -16,14 +16,19 @@
 {- along with Carl. If not, see <http://www.gnu.org/licenses/>.      -}
 {---------------------------------------------------------------------}
 
-module Carl.Struct (
-  module Carl.Struct.Matrix,
-  module Carl.Struct.Permutation,
-  module Carl.Struct.Polynomial,
-  module Carl.Struct.Tuple
+module Carl.Struct.Tuple (
+  Tuple(), arity, project
 ) where
 
-import Carl.Struct.Matrix
-import Carl.Struct.Permutation
-import Carl.Struct.Polynomial
-import Carl.Struct.Tuple
+import Carl.AlgErr
+
+import Data.List (genericLength)
+
+data Tuple a = Tuple [a]
+  deriving (Eq, Show)
+
+arity :: Tuple a -> Integer
+arity (Tuple es) = genericLength es
+
+project :: Tuple a -> Integer -> Either AlgErr a
+project (Tuple es) k = undefined
