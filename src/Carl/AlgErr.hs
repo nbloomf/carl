@@ -65,4 +65,6 @@ data AlgErr
   | NotAPermutation
 
   | DifferentModulus
+
+  | InvalidTupleIndex
   deriving (Eq, Show)

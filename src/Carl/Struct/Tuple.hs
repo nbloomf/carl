@@ -17,7 +17,7 @@
 {---------------------------------------------------------------------}
 
 module Carl.Struct.Tuple (
-  Tuple(), arity, project
+  Tuple(..), arity, project
 ) where
 
 import Carl.AlgErr
@@ -31,4 +31,10 @@ arity :: Tuple a -> Integer
 arity (Tuple es) = genericLength es
 
 project :: Tuple a -> Integer -> Either AlgErr a
-project (Tuple es) k = undefined
+project (Tuple es) k = foo es k
+  where
+    foo [] _     = Left InvalidTupleIndex
+    foo (x:_)  1 = Right x
+    foo (x:xs) k = if k <= 0
+      then Left InvalidTupleIndex
+      else foo xs (k-1)

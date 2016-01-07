@@ -24,6 +24,7 @@ Library
     Carl.Struct.Matrix,
     Carl.Struct.Permutation,
     Carl.Struct.Polynomial,
+    Carl.Struct.Tuple,
     Carl.Write,
     Carl.Write.LaTeX,
     Carl.Write.Unicode,
