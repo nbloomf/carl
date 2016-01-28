@@ -703,12 +703,12 @@ instance UFDoid Integer where
   rSqPart n
     | n < 0  = rSqPart (-n)
     | n == 0 = Right 0
-    | otherwise = Right $ last $ filter (\k -> n`rem`k == 0) $ takeWhile (<= n) $ map (^(2::Integer)) [1..n]
+    | otherwise = Right $ last $ filter (\k -> n`rem`(k*k) == 0) $ takeWhile (\k -> k*k <= n) [1..n]
 
   rSqFreePart 0 = return 1
   rSqFreePart n = do
     d <- rSqPart n
-    return (div n d)
+    return (div n (d*d))
 
 
 instance EDoid Integer where
