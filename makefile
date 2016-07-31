@@ -1,8 +1,5 @@
 carl: FORCE
-	@echo "Compiling"
-	cabal configure --user --enable-tests
-	cabal build
+	/app/halcyon/halcyon install /home/nathan/code/carl
 	cabal test
-	cabal install
 
 FORCE:

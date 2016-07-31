@@ -41,7 +41,7 @@ Library
   build-depends:  base, parsec, containers, regex-posix,
                   random-fu, rvar, random-extras,
                   transformers, mtl, random, directory,
-                  monadlist, primes, gtk, tostring
+                  monadlist, primes, tostring
 
 Test-Suite carl-test
   type:           exitcode-stdio-1.0
