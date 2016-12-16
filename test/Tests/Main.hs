@@ -21,10 +21,12 @@ module Tests.Main where
 import Test.Tasty (defaultMain, testGroup)
 
 import Carl (Rat((:/:)), zzmod)
+import Carl (GF2)
 
 import Tests.Lib.Data.Integer
 import Tests.Lib.Data.Rat
 import Tests.Lib.Data.ZZModulo
+import Tests.Lib.Data.GF2
 
 import Tests.Lib.Struct.Matrix
 import Tests.Lib.Struct.Polynomial
@@ -34,21 +36,35 @@ main = defaultMain $ testGroup "Property Tests"
   [ testInteger
   , testRat
   , testZZModulo
+  , testGF2
 
   , testGroup "Matrices"
       [ testGroup "Integer Matrix"
-          [ testRingoidMat    (0::Integer)
-          , testBipRingoidMat (0::Integer)
+          [ testRingoidMat       (0::Integer)
+          , testDagRingoidMat    (0::Integer)
+          , testBipRingoidMat    (0::Integer)
+          , testDagBipRingoidMat (0::Integer)
           ]
 
       , testGroup "Rat Matrix"
-          [ testRingoidMat    (0:/:1)
-          , testBipRingoidMat (0:/:1)
+          [ testRingoidMat       (0:/:1)
+          , testDagRingoidMat    (0:/:1)
+          , testBipRingoidMat    (0:/:1)
+          , testDagBipRingoidMat (0:/:1)
           ]
 
       , testGroup "ZZMod Matrix"
-          [ testRingoidMat    (0`zzmod`0)
-          , testBipRingoidMat (0`zzmod`0)
+          [ testRingoidMat       (0`zzmod`0)
+          , testDagRingoidMat    (0`zzmod`0)
+          , testBipRingoidMat    (0`zzmod`0)
+          , testDagBipRingoidMat (0`zzmod`0)
+          ]
+
+      , testGroup "GF2 Matrix"
+          [ testRingoidMat       (0::GF2)
+          , testDagRingoidMat    (0::GF2)
+          , testBipRingoidMat    (0::GF2)
+          , testDagBipRingoidMat (0::GF2)
           ]
       ]
 
@@ -67,6 +83,12 @@ main = defaultMain $ testGroup "Property Tests"
       , testGroup "ZZMod Polynomial"
           [ testRingoidPoly  (0`zzmod`0)
           , testCRingoidPoly (0`zzmod`0)
+          ]
+
+      , testGroup "GF2 Polynomial"
+          [ testRingoidPoly  (0::GF2)
+          , testCRingoidPoly (0::GF2)
+          , testEDoidPoly    (0::GF2)
           ]
       ]
 

@@ -1,27 +1,27 @@
 {---------------------------------------------------------------------}
-{- Copyright 2015 Nathan Bloomfield                                  -}
+{- Copyright 2016 Nathan Bloomfield                                  -}
 {-                                                                   -}
-{- This file is part of Feivel.                                      -}
+{- This file is part of Carl.                                        -}
 {-                                                                   -}
-{- Feivel is free software: you can redistribute it and/or modify    -}
+{- Carl is free software: you can redistribute it and/or modify      -}
 {- it under the terms of the GNU General Public License version 3,   -}
 {- as published by the Free Software Foundation.                     -}
 {-                                                                   -}
-{- Feivel is distributed in the hope that it will be useful, but     -}
+{- Carl is distributed in the hope that it will be useful, but       -}
 {- WITHOUT ANY WARRANTY; without even the implied warranty of        -}
 {- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the      -}
 {- GNU General Public License for more details.                      -}
 {-                                                                   -}
 {- You should have received a copy of the GNU General Public License -}
-{- along with Feivel. If not, see <http://www.gnu.org/licenses/>.    -}
+{- along with Carl. If not, see <http://www.gnu.org/licenses/>.      -}
 {---------------------------------------------------------------------}
 
-module Tests.Lib.Data.Rat where
+module Tests.Lib.Data.GF2 where
 
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.QuickCheck
 
-import Carl.Data.Rat
+import Carl.Data.GF2
 
 import Tests.Util
 import Tests.Lib.Ring
@@ -32,12 +32,11 @@ import Tests.Lib.Ring
 {- :Suite -}
 {----------}
 
-testRat :: TestTree
-testRat = testGroup "Rat"
-  [ testRingoid  (0:/:1)
-  , testCRingoid (0:/:1)
-  , testURingoid (0:/:1)
-  , testORingoid (0:/:1)
+testGF2 :: TestTree
+testGF2 = testGroup "GF2"
+  [ testRingoid  (0 :: GF2)
+  , testCRingoid (0 :: GF2)
+  , testURingoid (0 :: GF2)
   ]
 
 
@@ -46,13 +45,9 @@ testRat = testGroup "Rat"
 {- :Generators -}
 {---------------}
 
-instance Arbitrary Rat where
-  arbitrary = do
-    x         <- arbitrary
-    NonZero y <- arbitrary
-    return $ x :/: y
+instance Arbitrary GF2 where
+  arbitrary = elements [0,1]
 
-instance RingoidArb  Rat
-instance CRingoidArb Rat
-instance URingoidArb Rat
-instance ORingoidArb Rat
+instance RingoidArb  GF2
+instance CRingoidArb GF2
+instance URingoidArb GF2

@@ -21,7 +21,8 @@ module Carl.Data (
   module Carl.Data.ZZMod,
   module Carl.Data.Natural,
   module Carl.Data.Monomial,
-  module Carl.Data.QuadRat
+  module Carl.Data.QuadRat,
+  module Carl.Data.GF2
 ) where
 
 import Carl.Data.Rat
@@ -29,3 +30,4 @@ import Carl.Data.ZZMod
 import Carl.Data.Natural
 import Carl.Data.Monomial
 import Carl.Data.QuadRat
+import Carl.Data.GF2

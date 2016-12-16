@@ -1,5 +1,5 @@
 {---------------------------------------------------------------------}
-{- Copyright 2015 Nathan Bloomfield                                  -}
+{- Copyright 2015, 2016 Nathan Bloomfield                            -}
 {-                                                                   -}
 {- This file is part of Carl.                                        -}
 {-                                                                   -}
@@ -569,11 +569,11 @@ mConvolveE f g m n = do
 
 instance (Ringoid t) => Ringoid (Matrix t) where
   rAdd m1 m2 = case mCombineE rAdd m1 m2 of
-    Left _ -> undefined
+    Left _  -> error "rAdd Matrix definition"
     Right x -> Right x
 
   rMul m1 m2 = case mConvolveE rMul rAdd m1 m2 of
-    Left _ -> undefined
+    Left _  -> error "rMul Matrix definition"
     Right x -> Right x
 
   rNeg m = fmap rNeg m
@@ -690,13 +690,18 @@ mFirstNonZeroRowIndex m = do
     Nothing -> Left ZeroMatrix
     Just k  -> Right $ fromIntegral (k+1)
 
+instance (Ringoid t) => DagRingoid (Matrix t) where
+  rDag m = case mTranspose m of
+    Right n -> n
+    _ -> error "DagRingoid Matrix instance"
+
 instance (Ringoid t) => BipRingoid (Matrix t) where
   rBipIn x y = case mVCat x y of
-    Left _ -> undefined
+    Left _  -> error "rBipIn Matrix definition"
     Right m -> Right m
 
   rBipOut x y = case mHCat x y of
-    Left _ -> undefined
+    Left _  -> error "rBipOut Matrix definition"
     Right m -> Right m
 
 

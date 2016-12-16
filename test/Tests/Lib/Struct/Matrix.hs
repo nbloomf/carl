@@ -1,19 +1,19 @@
 {---------------------------------------------------------------------}
 {- Copyright 2015 Nathan Bloomfield                                  -}
 {-                                                                   -}
-{- This file is part of Feivel.                                      -}
+{- This file is part of Carl.                                        -}
 {-                                                                   -}
-{- Feivel is free software: you can redistribute it and/or modify    -}
+{- Carl is free software: you can redistribute it and/or modify      -}
 {- it under the terms of the GNU General Public License version 3,   -}
 {- as published by the Free Software Foundation.                     -}
 {-                                                                   -}
-{- Feivel is distributed in the hope that it will be useful, but     -}
+{- Carl is distributed in the hope that it will be useful, but       -}
 {- WITHOUT ANY WARRANTY; without even the implied warranty of        -}
 {- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the      -}
 {- GNU General Public License for more details.                      -}
 {-                                                                   -}
 {- You should have received a copy of the GNU General Public License -}
-{- along with Feivel. If not, see <http://www.gnu.org/licenses/>.    -}
+{- along with Carl. If not, see <http://www.gnu.org/licenses/>.      -}
 {---------------------------------------------------------------------}
 
 module Tests.Lib.Struct.Matrix where
@@ -45,8 +45,14 @@ testRingoidMat t = testRingoid (mCell t)
 
 testURingoidMat = undefined
 
+testDagRingoidMat :: (Ringoid t, Arbitrary t, Show t, RingoidArb t) => t -> TestTree
+testDagRingoidMat t = testDagRingoid (mCell t)
+
 testBipRingoidMat :: (Ringoid t, Arbitrary t, Show t, RingoidArb t) => t -> TestTree
 testBipRingoidMat t = testBipRingoid (mCell t)
+
+testDagBipRingoidMat :: (Ringoid t, Arbitrary t, Show t, RingoidArb t) => t -> TestTree
+testDagBipRingoidMat t = testDagBipRingoid (mCell t)
 
 
 
@@ -170,10 +176,23 @@ instance (Ringoid t, Arbitrary t, RingoidArb t) => RingoidArb (Matrix t) where
 
 
 {------------------}
+{- :DagRingoidArb -}
+{------------------}
+
+instance (Ringoid t, Arbitrary t, RingoidArb t) => DagRingoidArb (Matrix t)
+
+
+{------------------}
 {- :BipRingoidArb -}
 {------------------}
 
 instance (Ringoid t, Arbitrary t, RingoidArb t) => BipRingoidArb (Matrix t) where
+  rBipInExist _ = do
+    (r1,r2,c) <- arbDim3
+    m1 <- arbMatDim r1 c
+    m2 <- arbMatDim r2 c
+    return (m1, m2)
+
   rBipInAssoc _ = do
     (r1,r2,r3,c) <- arbDim4
     m1 <- arbMatDim r1 c
@@ -188,6 +207,12 @@ instance (Ringoid t, Arbitrary t, RingoidArb t) => BipRingoidArb (Matrix t) wher
     m2 <- arbRingoidMatDim r2 k x
     m3 <- arbRingoidMatDim k  c x
     return (m1, m2, m3)
+
+  rBipOutExist _ = do
+    (r,c1,c2) <- arbDim3
+    m1 <- arbMatDim r c1
+    m2 <- arbMatDim r c2
+    return (m1, m2)
 
   rBipOutAssoc _ = do
     (r,c1,c2,c3) <- arbDim4
@@ -223,9 +248,6 @@ testMatrixStructure a = testGroup "Matrix Structure"
       , testProperty "ρ₁A÷...÷ρₙA === A        " $ prop_vCat_rows a
       ]
   , testGroup "transpose"
-      [ testProperty "t(t(a)) == a             " $ prop_transpose_involution a
-      , testProperty "t(A|B) == t(A)÷t(B)      " $ prop_transpose_hCat a
-      , testProperty "t(A÷B) == t(A)|t(B)      " $ prop_transpose_vCat a
       , testProperty "t(row) = col             " $ prop_transpose_row a
       ]
   , testGroup "rowOf (ρₜ)"

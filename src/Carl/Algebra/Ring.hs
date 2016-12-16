@@ -576,7 +576,7 @@ class Fieldoid t
 {------------------}
 
 class DagRingoid t where
-  rDag :: t -> Either AlgErr t
+  rDag :: t -> t -- transpose
 
 
 

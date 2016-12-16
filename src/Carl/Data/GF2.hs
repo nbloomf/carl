@@ -16,43 +16,77 @@
 {- along with Feivel. If not, see <http://www.gnu.org/licenses/>.    -}
 {---------------------------------------------------------------------}
 
-module Tests.Lib.Data.Rat where
+module Carl.Data.GF2 (
+  GF2()
+) where
 
-import Test.Tasty (TestTree, testGroup)
-import Test.Tasty.QuickCheck
-
-import Carl.Data.Rat
-
-import Tests.Util
-import Tests.Lib.Ring
-
-
+import Carl.Algebra.Ring
+import Carl.AlgErr ()
+import Carl.Canon
+import Carl.Write.LaTeX
 
 {----------}
-{- :Suite -}
+{- :Types -}
 {----------}
 
-testRat :: TestTree
-testRat = testGroup "Rat"
-  [ testRingoid  (0:/:1)
-  , testCRingoid (0:/:1)
-  , testURingoid (0:/:1)
-  , testORingoid (0:/:1)
-  ]
+data GF2 = O | I
+  deriving Eq
 
+instance Num GF2 where
+  fromInteger 0 = O
+  fromInteger 1 = I
+  fromInteger _ = undefined
 
+  O + x = x
+  x + O = x
+  I + I = O
+
+  O * _ = O
+  _ * O = O
+  I * I = I
+
+  abs = undefined
+  signum = undefined
+
+instance Show GF2 where
+  show O = "0"
+  show I = "1"
+
+instance Canon GF2 where
+  canon = id
+
+instance LaTeX GF2 where
+  latex = show
 
 {---------------}
-{- :Generators -}
+{- :Arithmetic -}
 {---------------}
 
-instance Arbitrary Rat where
-  arbitrary = do
-    x         <- arbitrary
-    NonZero y <- arbitrary
-    return $ x :/: y
+instance Ringoid GF2 where
+  rAdd a b = return $ a + b
+  rMul a b = return $ a * b
+  rNeg = id
 
-instance RingoidArb  Rat
-instance CRingoidArb Rat
-instance URingoidArb Rat
-instance ORingoidArb Rat
+  rNeutOf _ = return O
+  rLAnnOf _ = return O
+  rRAnnOf _ = return O
+
+  rZero = O
+  rIsZero = (== O)
+
+instance CRingoid GF2 where
+
+instance URingoid GF2 where
+  rOne = I
+  rIsOne = (== I)
+
+  rIsUnit O = return False
+  rIsUnit I = return True
+
+  rLOneOf _ = return I
+  rROneOf _ = return I
+
+  rInjInt k = return $ fromInteger $ mod k 2
+
+  rInv O = Left (RingoidDivideByZeroErr $ show O)
+  rInv I = return I

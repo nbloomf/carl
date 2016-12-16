@@ -1,5 +1,5 @@
 {---------------------------------------------------------------------}
-{- Copyright 2015 Nathan Bloomfield                                  -}
+{- Copyright 2015, 2016 Nathan Bloomfield                            -}
 {-                                                                   -}
 {- This file is part of Feivel.                                      -}
 {-                                                                   -}
@@ -47,9 +47,9 @@ class (Groupoid t, Arbitrary t) => GroupoidArb t where
   gLocalElts :: t -> Int -> Gen [t]
   gLocalElts _ n = vectorOf n arbitrary
 
-  gOpAssoc     :: t -> Gen (t,t,t) -- (x+y)+z and x+(y+z) both exist
-  gOpLNeut     :: t -> Gen (t,t)   -- x is left neutral for y wrt rAdd
-  gOpRNeut     :: t -> Gen (t,t)   -- y is right neutral for x wrt rAdd
+  gOpAssoc :: t -> Gen (t,t,t) -- (x+y)+z and x+(y+z) both exist
+  gOpLNeut :: t -> Gen (t,t)   -- x is left neutral for y wrt rAdd
+  gOpRNeut :: t -> Gen (t,t)   -- y is right neutral for x wrt rAdd
 
   gOpLNeut _ = do
     y <- arbitrary
@@ -59,8 +59,8 @@ class (Groupoid t, Arbitrary t) => GroupoidArb t where
     x <- arbitrary
     return (x, gRIdOf x)
 
-  -- Defaults: Assume ringoid is total.
-  gOpAssoc     a = arb3 a
+  -- Defaults: Assume groupoid is total.
+  gOpAssoc a = arb3 a
 
 
 

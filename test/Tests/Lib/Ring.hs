@@ -1,19 +1,19 @@
 {---------------------------------------------------------------------}
-{- Copyright 2015 Nathan Bloomfield                                  -}
+{- Copyright 2015, 2016 Nathan Bloomfield                            -}
 {-                                                                   -}
-{- This file is part of Feivel.                                      -}
+{- This file is part of Carl.                                        -}
 {-                                                                   -}
-{- Feivel is free software: you can redistribute it and/or modify    -}
+{- Carl is free software: you can redistribute it and/or modify      -}
 {- it under the terms of the GNU General Public License version 3,   -}
 {- as published by the Free Software Foundation.                     -}
 {-                                                                   -}
-{- Feivel is distributed in the hope that it will be useful, but     -}
+{- Carl is distributed in the hope that it will be useful, but       -}
 {- WITHOUT ANY WARRANTY; without even the implied warranty of        -}
 {- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the      -}
 {- GNU General Public License for more details.                      -}
 {-                                                                   -}
 {- You should have received a copy of the GNU General Public License -}
-{- along with Feivel. If not, see <http://www.gnu.org/licenses/>.    -}
+{- along with Carl. If not, see <http://www.gnu.org/licenses/>.      -}
 {---------------------------------------------------------------------}
 
 module Tests.Lib.Ring where
@@ -111,6 +111,11 @@ testEDoid t = testGroup "EDoid Structure"
   , testProperty "r == 0 or N(r) < N(b)" $ prop_DivAlg_rem  t
   ]
 
+testDagRingoid :: (RingoidArb t, DagRingoidArb t, Show t) => t -> TestTree
+testDagRingoid t = testGroup "DagRingoid Structure"
+  [ testProperty "(a†)† == a" $ prop_rDag_invol t
+  ]
+
 testBipRingoid :: (RingoidArb t, BipRingoidArb t, Show t) => t -> TestTree
 testBipRingoid t = testGroup "BipRingoid Structure"
   [ testProperty "(a÷b)÷c == a÷(b÷c)  " $ prop_rBipIn_assoc       t
@@ -118,6 +123,12 @@ testBipRingoid t = testGroup "BipRingoid Structure"
 
   , testProperty "(a|b)|c == a|(b|c)  " $ prop_rBipOut_assoc      t
   , testProperty "a·(b|c) == a·b | a·c" $ prop_rMul_ldist_rBipOut t
+  ]
+
+testDagBipRingoid :: (RingoidArb t, BipRingoidArb t, DagRingoidArb t, Show t) => t -> TestTree
+testDagBipRingoid t = testGroup "Dag+BipRingoid Structure"
+  [ testProperty "(a÷b)† == (a†)|(b†)" $ prop_rDag_rBipIn_rBipOut_hom t
+  , testProperty "(a|b)† == (a†)÷(b†)" $ prop_rDag_rBipOut_rBipIn_hom t
   ]
 
 
@@ -198,6 +209,10 @@ class (CRingoid t, Arbitrary t) => CRingoidArb t where
 class (URingoid t, Arbitrary t) => URingoidArb t where
   rMulLOne      :: t -> Gen (t,t)   -- x is left one of y
   rMulROne      :: t -> Gen (t,t)   -- y is right one of x
+
+  -- Defaults: Assume ringoid is total
+  rMulLOne _ = arbitrary >>= \a -> return (rOne,a)
+  rMulROne _ = arbitrary >>= \a -> return (a,rOne)
 
 
 {----------------}
@@ -280,13 +295,26 @@ class (Ringoid t, EDoid t, Arbitrary t) => EDoidArb t where
 
 
 {------------------}
+{- :DagRingoidArb -}
+{------------------}
+
+class (Ringoid t, DagRingoid t, Arbitrary t) => DagRingoidArb t where
+  rDagInvol :: t -> Gen t
+
+  rDagInvol _ = arbitrary
+
+
+
+{------------------}
 {- :BipRingoidArb -}
 {------------------}
 
 class (Ringoid t, BipRingoid t, Arbitrary t) => BipRingoidArb t where
+  rBipInExist      :: t -> Gen (t,t)   -- a|b exists
   rBipInAssoc      :: t -> Gen (t,t,t)
   rMulDistRrBipIn  :: t -> Gen (t,t,t)
 
+  rBipOutExist     :: t -> Gen (t,t)
   rBipOutAssoc     :: t -> Gen (t,t,t)
   rMulDistLrBipOut :: t -> Gen (t,t,t)
 
@@ -365,26 +393,40 @@ prop_rMul_rone t = forAll (rMulROne t) (isRIdentityUnderBy rMul rEQ)
 
 {- :Min -}
 
-prop_rMin_idemp :: (RingoidArb t, ORingoidArb t, Show t) => t -> Property
-prop_rMin_idemp t = forAll (rMinIdemp t) (rMin `isIdempotentBy` rEQ)
+prop_rMin_idemp :: (RingoidArb t, ORingoidArb t, Show t)
+  => t -> Property
+prop_rMin_idemp t = forAll (rMinIdemp t)
+  (rMin `isIdempotentBy` rEQ)
 
-prop_rMin_assoc :: (RingoidArb t, ORingoidArb t, Show t) => t -> Property
-prop_rMin_assoc t = forAll (rMinAssoc t) (rMin `isAssociativeBy` rEQ)
+prop_rMin_assoc :: (RingoidArb t, ORingoidArb t, Show t)
+  => t -> Property
+prop_rMin_assoc t = forAll (rMinAssoc t)
+  (rMin `isAssociativeBy` rEQ)
 
-prop_rMin_comm :: (RingoidArb t, ORingoidArb t, Show t) => t -> Property
-prop_rMin_comm t = forAll (rMinComm t) (rMin `isCommutativeBy` rEQ)
+prop_rMin_comm :: (RingoidArb t, ORingoidArb t, Show t)
+  => t -> Property
+prop_rMin_comm t = forAll (rMinComm t)
+  (rMin `isCommutativeBy` rEQ)
 
-prop_rMin_ldist_rMax :: (RingoidArb t, ORingoidArb t, Show t) => t -> Property
-prop_rMin_ldist_rMax t = forAll (rMinDistLrMax t) (isLDistributiveOverBy rMin rMax rEQ)
+prop_rMin_ldist_rMax :: (RingoidArb t, ORingoidArb t, Show t)
+  => t -> Property
+prop_rMin_ldist_rMax t = forAll (rMinDistLrMax t)
+  (isLDistributiveOverBy rMin rMax rEQ)
 
-prop_rMin_rdist_rMax :: (RingoidArb t, ORingoidArb t, Show t) => t -> Property
-prop_rMin_rdist_rMax t = forAll (rMinDistRrMax t) (isRDistributiveOverBy rMin rMax rEQ)
+prop_rMin_rdist_rMax :: (RingoidArb t, ORingoidArb t, Show t)
+  => t -> Property
+prop_rMin_rdist_rMax t = forAll (rMinDistRrMax t)
+  (isRDistributiveOverBy rMin rMax rEQ)
 
-prop_rAdd_ldist_rMin :: (RingoidArb t, ORingoidArb t, Show t) => t -> Property
-prop_rAdd_ldist_rMin t = forAll (rAddDistLrMin t) (isLDistributiveOverBy rAdd rMin rEQ)
+prop_rAdd_ldist_rMin :: (RingoidArb t, ORingoidArb t, Show t)
+  => t -> Property
+prop_rAdd_ldist_rMin t = forAll (rAddDistLrMin t)
+  (isLDistributiveOverBy rAdd rMin rEQ)
 
-prop_rAdd_rdist_rMin :: (RingoidArb t, ORingoidArb t, Show t) => t -> Property
-prop_rAdd_rdist_rMin t = forAll (rAddDistRrMin t) (isRDistributiveOverBy rAdd rMin rEQ)
+prop_rAdd_rdist_rMin :: (RingoidArb t, ORingoidArb t, Show t)
+  => t -> Property
+prop_rAdd_rdist_rMin t = forAll (rAddDistRrMin t)
+  (isRDistributiveOverBy rAdd rMin rEQ)
 
 {- :Max -}
 
@@ -411,14 +453,19 @@ prop_rAdd_rdist_rMax t = forAll (rAddDistRrMax t) (isRDistributiveOverBy rAdd rM
 
 {- :Abs -}
 
-prop_rAbs_idemp :: (RingoidArb t, ORingoidArb t, Show t) => t -> Property
+prop_rAbs_idemp :: (RingoidArb t, ORingoidArb t, Show t)
+  => t -> Property
 prop_rAbs_idemp t = forAll (rAbsIdemp t) (rAbs `isIdempotentUBy` rEQ)
 
-prop_rAbs_udist_rMul :: (RingoidArb t, ORingoidArb t, Show t) => t -> Property
-prop_rAbs_udist_rMul t = forAll (rAbsDistUrMul t) (rAbs `isDistributiveUOverBy` rMul $ rEQ)
+prop_rAbs_udist_rMul :: (RingoidArb t, ORingoidArb t, Show t)
+  => t -> Property
+prop_rAbs_udist_rMul t = forAll (rAbsDistUrMul t)
+  (rAbs `isDistributiveUOverBy` rMul $ rEQ)
 
-prop_rAbs_triangle :: (RingoidArb t, ORingoidArb t, Show t) => t -> Property
-prop_rAbs_triangle t = forAll (rAbsTriangle t) (rAbs `isDistributiveUOverBy` rAdd $ rLEQ)
+prop_rAbs_triangle :: (RingoidArb t, ORingoidArb t, Show t)
+  => t -> Property
+prop_rAbs_triangle t = forAll (rAbsTriangle t)
+  (rAbs `isDistributiveUOverBy` rAdd $ rLEQ)
 
 
 
@@ -426,26 +473,35 @@ prop_rAbs_triangle t = forAll (rAbsTriangle t) (rAbs `isDistributiveUOverBy` rAd
 {- :GCDoid -}
 {-----------}
 
-prop_rGCD_assoc :: (RingoidArb t, GCDoidArb t, Show t) => t -> Property
+prop_rGCD_assoc :: (RingoidArb t, GCDoidArb t, Show t)
+  => t -> Property
 prop_rGCD_assoc t = forAll (rGCDAssoc t) (rGCD `isAssociativeBy` rEQ)
 
-prop_rGCD_comm :: (RingoidArb t, GCDoidArb t, Show t) => t -> Property
+prop_rGCD_comm :: (RingoidArb t, GCDoidArb t, Show t)
+  => t -> Property
 prop_rGCD_comm t = forAll (rGCDComm t) (rGCD `isCommutativeBy` rEQ)
 
-prop_rGCD_idemp :: (URingoidAssoc t, GCDoidArb t, Show t) => t -> Property
+prop_rGCD_idemp :: (URingoidAssoc t, GCDoidArb t, Show t)
+  => t -> Property
 prop_rGCD_idemp t = forAll (rGCDIdemp t) (rGCD `isIdempotentBy` rAssoc)
 
-prop_rGCD_lneut :: (URingoidAssoc t, GCDoidArb t, Show t) => t -> Property
+prop_rGCD_lneut :: (URingoidAssoc t, GCDoidArb t, Show t)
+  => t -> Property
 prop_rGCD_lneut t = forAll (rGCDLNeut t) (isLIdentityUnderBy rGCD rAssoc)
 
-prop_rGCD_rneut :: (URingoidAssoc t, GCDoidArb t, Show t) => t -> Property
+prop_rGCD_rneut :: (URingoidAssoc t, GCDoidArb t, Show t)
+  => t -> Property
 prop_rGCD_rneut t = forAll (rGCDRNeut t) (isRIdentityUnderBy rGCD rAssoc)
 
-prop_rMul_ldist_rGCD :: (URingoidAssoc t, RingoidArb t, GCDoidArb t, Show t) => t -> Property
-prop_rMul_ldist_rGCD t = forAll (rMulDistLrGCD t) (rMul `isLDistributiveOverBy` rGCD $ rAssoc)
+prop_rMul_ldist_rGCD :: (URingoidAssoc t, RingoidArb t, GCDoidArb t, Show t)
+  => t -> Property
+prop_rMul_ldist_rGCD t = forAll (rMulDistLrGCD t)
+  (rMul `isLDistributiveOverBy` rGCD $ rAssoc)
 
-prop_rMul_rdist_rGCD :: (URingoidAssoc t, RingoidArb t, GCDoidArb t, Show t) => t -> Property
-prop_rMul_rdist_rGCD t = forAll (rMulDistRrGCD t) (rMul `isRDistributiveOverBy` rGCD $ rAssoc)
+prop_rMul_rdist_rGCD :: (URingoidAssoc t, RingoidArb t, GCDoidArb t, Show t)
+  => t -> Property
+prop_rMul_rdist_rGCD t = forAll (rMulDistRrGCD t)
+  (rMul `isRDistributiveOverBy` rGCD $ rAssoc)
 
 
 
@@ -458,6 +514,16 @@ prop_DivAlg_rem t = forAll (rQuotRem t) (testDivAlgRem rDivAlg rNorm rIsZero)
 
 prop_DivAlg_quot :: (Ringoid t, EDoid t, EDoidArb t, Show t) => t -> Property
 prop_DivAlg_quot t = forAll (rQuotRem t) (testDivAlgQuot rDivAlg rMul rAdd rEQ)
+
+
+
+{---------------}
+{- :DagRingoid -}
+{---------------}
+
+prop_rDag_invol :: (RingoidArb t, DagRingoidArb t, Show t)
+  => t -> Property
+prop_rDag_invol t = forAll (rDagInvol t) (rDag `isInvolutiveUBy` rEQ)
 
 
 
@@ -476,3 +542,11 @@ prop_rBipOut_assoc t = forAll (rBipOutAssoc t) (rBipOut `isAssociativeBy` rEQ)
 
 prop_rMul_ldist_rBipOut :: (RingoidArb t, BipRingoidArb t, Show t) => t -> Property
 prop_rMul_ldist_rBipOut t = forAll (rMulDistLrBipOut t) (rMul `isLDistributiveOverBy` rBipOut $ rEQ)
+
+
+
+prop_rDag_rBipIn_rBipOut_hom :: (RingoidArb t, BipRingoidArb t, DagRingoidArb t, Show t) => t -> Property
+prop_rDag_rBipIn_rBipOut_hom t = forAll (rBipInExist t) (isHomomorphicUBy rDag rBipIn rBipOut rEQ)
+
+prop_rDag_rBipOut_rBipIn_hom :: (RingoidArb t, BipRingoidArb t, DagRingoidArb t, Show t) => t -> Property
+prop_rDag_rBipOut_rBipIn_hom t = forAll (rBipOutExist t) (isHomomorphicUBy rDag rBipOut rBipIn rEQ)
