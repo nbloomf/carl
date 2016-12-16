@@ -39,6 +39,7 @@ import Carl.Algebra.Ring
 {-     :URingoid    -}
 {-     :ORingoid    -}
 {-     :GCDoid      -}
+{-     :DagRingoid  -}
 {-     :BipRingoid  -}
 {--------------------}
 
@@ -48,61 +49,61 @@ import Carl.Algebra.Ring
 
 testRingoid :: (Ringoid t, RingoidArb t, Show t) => t -> TestTree
 testRingoid t = testGroup "Ringoid Structure"
-  [ testProperty "(a+b)+c == a+(b+c)  " $ prop_rAdd_assoc        t
-  , testProperty "a+b == b+a          " $ prop_rAdd_comm         t
-  , testProperty "0+a == a            " $ prop_rAdd_lneut        t
-  , testProperty "a+0 == a            " $ prop_rAdd_rneut        t
-  , testProperty "-(-a) == a          " $ prop_rNeg_invol        t
-  , testProperty "(a·b)·c == a·(b·c)  " $ prop_rMul_assoc        t
-  , testProperty "a·(b+c) == a·b + a·c" $ prop_rMul_ldist_rAdd   t
-  , testProperty "(a+b)·c == a·c + b·c" $ prop_rMul_rdist_rAdd   t
-  , testProperty "0·a == 0            " $ prop_rMul_lzero        t
-  , testProperty "a·0 == 0            " $ prop_rMul_rzero        t
+  [ testProperty "(a+b)+c == a+(b+c)   " $ prop_rAdd_assoc        t
+  , testProperty "a+b == b+a           " $ prop_rAdd_comm         t
+  , testProperty "0+a == a             " $ prop_rAdd_lneut        t
+  , testProperty "a+0 == a             " $ prop_rAdd_rneut        t
+  , testProperty "-(-a) == a           " $ prop_rNeg_invol        t
+  , testProperty "(a·b)·c == a·(b·c)   " $ prop_rMul_assoc        t
+  , testProperty "a·(b+c) == a·b + a·c " $ prop_rMul_ldist_rAdd   t
+  , testProperty "(a+b)·c == a·c + b·c " $ prop_rMul_rdist_rAdd   t
+  , testProperty "0·a == 0             " $ prop_rMul_lzero        t
+  , testProperty "a·0 == 0             " $ prop_rMul_rzero        t
   ]
 
 testCRingoid :: (RingoidArb t, CRingoidArb t, Show t) => t -> TestTree
 testCRingoid t = testGroup "CRingoid Structure"
-  [ testProperty "a·b == b·a          " $ prop_rMul_comm         t
+  [ testProperty "a·b == b·a           " $ prop_rMul_comm         t
   ]
 
 testURingoid :: (RingoidArb t, URingoidArb t, Show t) => t -> TestTree
 testURingoid t = testGroup "URingoid Structure"
-  [ testProperty "1·a == a            " $ prop_rMul_lone         t
-  , testProperty "a·1 == a            " $ prop_rMul_rone         t
+  [ testProperty "1·a == a             " $ prop_rMul_lone         t
+  , testProperty "a·1 == a             " $ prop_rMul_rone         t
   ]
 
 testORingoid :: (RingoidArb t, ORingoidArb t, Show t) => t -> TestTree
 testORingoid t = testGroup "ORingoid Structure"
-  [ testProperty "aµa == a            " $ prop_rMin_idemp        t
-  , testProperty "(aµb)µc == aµ(bµc)  " $ prop_rMin_assoc        t
-  , testProperty "aµb == bµa          " $ prop_rMin_comm         t
-  , testProperty "aµ(bMc) == aµb M aµc" $ prop_rMin_ldist_rMax   t
-  , testProperty "(aMb)µc == aµc M bµc" $ prop_rMin_rdist_rMax   t
-  , testProperty "a+(bµc) == a+b µ a+c" $ prop_rAdd_ldist_rMin   t
-  , testProperty "(aµb)+c == a+c µ b+c" $ prop_rAdd_rdist_rMin   t
+  [ testProperty "aµa == a             " $ prop_rMin_idemp        t
+  , testProperty "(aµb)µc == aµ(bµc)   " $ prop_rMin_assoc        t
+  , testProperty "aµb == bµa           " $ prop_rMin_comm         t
+  , testProperty "aµ(bMc) == aµb M aµc " $ prop_rMin_ldist_rMax   t
+  , testProperty "(aMb)µc == aµc M bµc " $ prop_rMin_rdist_rMax   t
+  , testProperty "a+(bµc) == a+b µ a+c " $ prop_rAdd_ldist_rMin   t
+  , testProperty "(aµb)+c == a+c µ b+c " $ prop_rAdd_rdist_rMin   t
 
-  , testProperty "aMa == a            " $ prop_rMax_idemp        t
-  , testProperty "(aMb)Mc == aM(bMc)  " $ prop_rMax_assoc        t
-  , testProperty "aMb == bMa          " $ prop_rMax_comm         t
-  , testProperty "aM(bµc) == aMb µ aMc" $ prop_rMax_ldist_rMin   t
-  , testProperty "(aµb)Mc == aMc µ bMc" $ prop_rMax_rdist_rMin   t
-  , testProperty "a+(bMc) == a+b M a+c" $ prop_rAdd_ldist_rMax   t
-  , testProperty "(aMb)+c == a+c M b+c" $ prop_rAdd_rdist_rMax   t
+  , testProperty "aMa == a             " $ prop_rMax_idemp        t
+  , testProperty "(aMb)Mc == aM(bMc)   " $ prop_rMax_assoc        t
+  , testProperty "aMb == bMa           " $ prop_rMax_comm         t
+  , testProperty "aM(bµc) == aMb µ aMc " $ prop_rMax_ldist_rMin   t
+  , testProperty "(aµb)Mc == aMc µ bMc " $ prop_rMax_rdist_rMin   t
+  , testProperty "a+(bMc) == a+b M a+c " $ prop_rAdd_ldist_rMax   t
+  , testProperty "(aMb)+c == a+c M b+c " $ prop_rAdd_rdist_rMax   t
 
-  , testProperty "||a|| == |a|        " $ prop_rAbs_idemp        t
-  , testProperty "|a·b| == |a| · |b|  " $ prop_rAbs_udist_rMul   t
-  , testProperty "|a+b| <= |a| + |b|  " $ prop_rAbs_triangle     t
+  , testProperty "||a|| == |a|         " $ prop_rAbs_idemp        t
+  , testProperty "|a·b| == |a| · |b|   " $ prop_rAbs_udist_rMul   t
+  , testProperty "|a+b| <= |a| + |b|   " $ prop_rAbs_triangle     t
   ]
 
 testGCDoid :: (RingoidArb t, GCDoidArb t, Show t) => t -> TestTree
 testGCDoid t = testGroup "GCDoid Structure"
-  [ testProperty "(a;b);c == a;(b;c)  " $ prop_rGCD_assoc        t
-  , testProperty "a;b == b;a          " $ prop_rGCD_comm         t
-  , testProperty "a;a ~~ a            " $ prop_rGCD_idemp        t
-  , testProperty "a·(b;c) ~~ a·b ; a·c" $ prop_rMul_ldist_rGCD   t
-  , testProperty "(a;b)·c ~~ a·c ; b·c" $ prop_rMul_rdist_rGCD   t
-  , testProperty "0;a ~~ a            " $ prop_rGCD_lneut        t
-  , testProperty "a;0 ~~ a            " $ prop_rGCD_rneut        t
+  [ testProperty "(a;b);c == a;(b;c)   " $ prop_rGCD_assoc        t
+  , testProperty "a;b == b;a           " $ prop_rGCD_comm         t
+  , testProperty "a;a ~~ a             " $ prop_rGCD_idemp        t
+  , testProperty "a·(b;c) ~~ a·b ; a·c " $ prop_rMul_ldist_rGCD   t
+  , testProperty "(a;b)·c ~~ a·c ; b·c " $ prop_rMul_rdist_rGCD   t
+  , testProperty "0;a ~~ a             " $ prop_rGCD_lneut        t
+  , testProperty "a;0 ~~ a             " $ prop_rGCD_rneut        t
   ]
 
 testEDoid :: (RingoidArb t, EDoidArb t, Show t) => t -> TestTree
@@ -111,24 +112,29 @@ testEDoid t = testGroup "EDoid Structure"
   , testProperty "r == 0 or N(r) < N(b)" $ prop_DivAlg_rem  t
   ]
 
-testDagRingoid :: (RingoidArb t, DagRingoidArb t, Show t) => t -> TestTree
+testDagRingoid :: (RingoidArb t, DagRingoidArb t, Show t)
+  => t -> TestTree
 testDagRingoid t = testGroup "DagRingoid Structure"
-  [ testProperty "(a†)† == a" $ prop_rDag_invol t
+  [ testProperty "(a†)† == a           " $ prop_rDag_invol       t
+  , testProperty "(a+b)† == a† + b†    " $ prop_rDag_udist_rAdd  t
+  , testProperty "(a*b)† == b† * a†    " $ prop_rDag_uadist_rMul t
   ]
 
-testBipRingoid :: (RingoidArb t, BipRingoidArb t, Show t) => t -> TestTree
+testBipRingoid :: (RingoidArb t, BipRingoidArb t, Show t)
+  => t -> TestTree
 testBipRingoid t = testGroup "BipRingoid Structure"
-  [ testProperty "(a÷b)÷c == a÷(b÷c)  " $ prop_rBipIn_assoc       t
-  , testProperty "(a÷b)·c == a·c ÷ b·c" $ prop_rMul_rdist_rBipIn  t
+  [ testProperty "(a÷b)÷c == a÷(b÷c)   " $ prop_rBipIn_assoc       t
+  , testProperty "(a÷b)·c == a·c ÷ b·c " $ prop_rMul_rdist_rBipIn  t
 
-  , testProperty "(a|b)|c == a|(b|c)  " $ prop_rBipOut_assoc      t
-  , testProperty "a·(b|c) == a·b | a·c" $ prop_rMul_ldist_rBipOut t
+  , testProperty "(a|b)|c == a|(b|c)   " $ prop_rBipOut_assoc      t
+  , testProperty "a·(b|c) == a·b | a·c " $ prop_rMul_ldist_rBipOut t
   ]
 
-testDagBipRingoid :: (RingoidArb t, BipRingoidArb t, DagRingoidArb t, Show t) => t -> TestTree
+testDagBipRingoid :: (RingoidArb t, BipRingoidArb t, DagRingoidArb t, Show t)
+  => t -> TestTree
 testDagBipRingoid t = testGroup "Dag+BipRingoid Structure"
-  [ testProperty "(a÷b)† == (a†)|(b†)" $ prop_rDag_rBipIn_rBipOut_hom t
-  , testProperty "(a|b)† == (a†)÷(b†)" $ prop_rDag_rBipOut_rBipIn_hom t
+  [ testProperty "(a÷b)† == a† | b†    " $ prop_rDag_rBipIn_rBipOut_hom t
+  , testProperty "(a|b)† == a† ÷ b†    " $ prop_rDag_rBipOut_rBipIn_hom t
   ]
 
 
@@ -148,11 +154,13 @@ class (Ringoid t, Arbitrary t) => RingoidArb t where
   rLocalElts :: t -> Int -> Gen [t]
   rLocalElts _ n = vectorOf n arbitrary
 
+  rAddExist     :: t -> Gen (t,t)   -- x+y exists
   rAddAssoc     :: t -> Gen (t,t,t) -- (x+y)+z and x+(y+z) both exist
   rAddComm      :: t -> Gen (t,t)   -- x+y and y+x both exist
   rAddLNeut     :: t -> Gen (t,t)   -- x is left neutral for y wrt rAdd
   rAddRNeut     :: t -> Gen (t,t)   -- y is right neutral for x wrt rAdd
 
+  rMulExist     :: t -> Gen (t,t)   -- x*y exists
   rMulAssoc     :: t -> Gen (t,t,t) -- (x*y)*z and x*(y*z) both exist
   rMulDistLrAdd :: t -> Gen (t,t,t) -- x*y + x*z and x*(y+z) both exist
   rMulDistRrAdd :: t -> Gen (t,t,t) -- x*z + y*z and (x+y)*z both exist
@@ -184,8 +192,10 @@ class (Ringoid t, Arbitrary t) => RingoidArb t where
       Right y -> return (x,y)
 
   -- Defaults: Assume ringoid is total.
+  rAddExist     a = arb2 a
   rAddAssoc     a = arb3 a
   rAddComm      a = arb2 a
+  rMulExist     a = arb2 a
   rMulAssoc     a = arb3 a
   rMulDistLrAdd a = arb3 a
   rMulDistRrAdd a = arb3 a
@@ -301,6 +311,7 @@ class (Ringoid t, EDoid t, Arbitrary t) => EDoidArb t where
 class (Ringoid t, DagRingoid t, Arbitrary t) => DagRingoidArb t where
   rDagInvol :: t -> Gen t
 
+  -- Default
   rDagInvol _ = arbitrary
 
 
@@ -310,12 +321,12 @@ class (Ringoid t, DagRingoid t, Arbitrary t) => DagRingoidArb t where
 {------------------}
 
 class (Ringoid t, BipRingoid t, Arbitrary t) => BipRingoidArb t where
-  rBipInExist      :: t -> Gen (t,t)   -- a|b exists
-  rBipInAssoc      :: t -> Gen (t,t,t)
+  rBipInExist      :: t -> Gen (t,t)   -- a÷b exists
+  rBipInAssoc      :: t -> Gen (t,t,t) -- (a÷b)÷c and a÷(b÷c) both exist
   rMulDistRrBipIn  :: t -> Gen (t,t,t)
 
-  rBipOutExist     :: t -> Gen (t,t)
-  rBipOutAssoc     :: t -> Gen (t,t,t)
+  rBipOutExist     :: t -> Gen (t,t)   -- a|b exists
+  rBipOutAssoc     :: t -> Gen (t,t,t) -- (a|b)|c and a|(b|c) both exist
   rMulDistLrBipOut :: t -> Gen (t,t,t)
 
 
@@ -525,6 +536,16 @@ prop_rDag_invol :: (RingoidArb t, DagRingoidArb t, Show t)
   => t -> Property
 prop_rDag_invol t = forAll (rDagInvol t) (rDag `isInvolutiveUBy` rEQ)
 
+prop_rDag_udist_rAdd :: (RingoidArb t, DagRingoidArb t, Show t)
+  => t -> Property
+prop_rDag_udist_rAdd t = forAll (rAddExist t)
+  (rDag `isDistributiveUOverBy` rAdd $ rEQ)
+
+prop_rDag_uadist_rMul :: (RingoidArb t, DagRingoidArb t, Show t)
+  => t -> Property
+prop_rDag_uadist_rMul t = forAll (rMulExist t)
+  (rDag `isAntiDistributiveUOverBy` rMul $ rEQ)
+
 
 
 {---------------}
@@ -544,6 +565,10 @@ prop_rMul_ldist_rBipOut :: (RingoidArb t, BipRingoidArb t, Show t) => t -> Prope
 prop_rMul_ldist_rBipOut t = forAll (rMulDistLrBipOut t) (rMul `isLDistributiveOverBy` rBipOut $ rEQ)
 
 
+
+{-------------------}
+{- :Dag+BipRingoid -}
+{-------------------}
 
 prop_rDag_rBipIn_rBipOut_hom :: (RingoidArb t, BipRingoidArb t, DagRingoidArb t, Show t) => t -> Property
 prop_rDag_rBipIn_rBipOut_hom t = forAll (rBipInExist t) (isHomomorphicUBy rDag rBipIn rBipOut rEQ)

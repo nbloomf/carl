@@ -22,7 +22,7 @@ module Carl.Struct.Matrix (
   Matrix(Null), Dim, Index, mCell,
 
   -- Construct
-  mRowMajorFromList, mFromRowList, mRowFromList, mColFromList, mSingleton,
+  mRowMajorFromList, mFromRowList, mRowFromList, mColFromList,
   mFromMap, mConst, mFromMapM, mToRowList, mRowsOf, mColsOf, toListM,
 
   mListRowOf, mListColOf, mRowOf, mColOf,
@@ -143,9 +143,6 @@ mRowFromList as = mRowMajorFromList 1 (genericLength as) as
 
 mColFromList :: [a] -> Either AlgErr (Matrix a)
 mColFromList as = mRowMajorFromList (genericLength as) 1 as
-
-mSingleton :: a -> Either AlgErr (Matrix a)
-mSingleton a = mRowMajorFromList 1 1 [a]
 
 
 -- From Map
@@ -1014,7 +1011,7 @@ mGJFactorT _ = mGJFactor
 
 
 instance (LaTeX a) => LaTeX (Matrix a) where
-  latex m = "\\begin{bmatrix} " ++ foo ++ " \\end{bmatrix}"
+  latex m = "\\begin{bmatrix}\n " ++ foo ++ "\n\\end{bmatrix}"
     where
-      foo = concat $ intersperse " \\\\ " $ map (concat . intersperse " & " . map latex) $ mToRowList m
+      foo = concat $ intersperse " \\\\\n " $ map (concat . intersperse " & " . map latex) $ mToRowList m
 

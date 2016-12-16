@@ -119,6 +119,13 @@ instance (Arbitrary t) => Arbitrary (Matrix t) where
 {---------------}
 
 instance (Ringoid t, Arbitrary t, RingoidArb t) => RingoidArb (Matrix t) where
+  rAddExist _ = do
+    (r,c) <- arbDim2
+    x  <- arbitrary
+    m1 <- arbRingoidMatDim r c x
+    m2 <- arbRingoidMatDim r c x
+    return (m1, m2)
+
   rAddAssoc _ = do
     (r,c) <- arbDim2
     x  <- arbitrary
@@ -132,6 +139,13 @@ instance (Ringoid t, Arbitrary t, RingoidArb t) => RingoidArb (Matrix t) where
     x  <- arbitrary
     m1 <- arbRingoidMatDim r c x
     m2 <- arbRingoidMatDim r c x
+    return (m1, m2)
+
+  rMulExist _ = do
+    (r,k,c) <- arbDim3
+    x  <- arbitrary
+    m1 <- arbRingoidMatDim r k x
+    m2 <- arbRingoidMatDim k c x
     return (m1, m2)
 
   rMulAssoc _ = do

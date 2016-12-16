@@ -159,6 +159,16 @@ isDistributiveUOverBy op up eq (a,b) = checkEither foo
       u <- (op a) `up` (op b)
       (op t) `eq` u
 
+isAntiDistributiveUOverBy
+  :: (a -> a) -> (a -> a -> Either err a) -> (a -> a -> Either err Bool)
+    -> (a,a) -> Bool
+isAntiDistributiveUOverBy op up eq (a,b) = checkEither foo
+  where
+    foo = do
+      t <- a `up` b
+      u <- (op b) `up` (op a)
+      (op t) `eq` u
+
 isHomomorphicUBy :: (a -> a) -> (a -> a -> Either err a) -> (a -> a -> Either err a) -> (a -> a -> Either err Bool) -> (a,a) -> Bool
 isHomomorphicUBy op bin1 bin2 eq (a,b) = checkEither foo
   where
@@ -166,6 +176,7 @@ isHomomorphicUBy op bin1 bin2 eq (a,b) = checkEither foo
       x <- bin1 a b
       y <- bin2 (op a) (op b)
       op x `eq` y
+
 
 
 {---------}
