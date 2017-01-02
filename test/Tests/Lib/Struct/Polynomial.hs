@@ -46,13 +46,22 @@ import Tests.Lib.Ring
 {-----------}
 
 testRingoidPoly :: (RingoidArb t, CRingoidArb t, Show t, Canon t, Eq t) => t -> TestTree
-testRingoidPoly t = testRingoid (constPoly t)
+testRingoidPoly t = testRingoid (p t)
+  where
+    p :: (Ringoid t) => t -> Poly String t
+    p = constPoly
 
 testCRingoidPoly :: (RingoidArb t, CRingoidArb t, Show t, Canon t, Eq t) => t -> TestTree
-testCRingoidPoly t = testCRingoid (constPoly t)
+testCRingoidPoly t = testCRingoid (p t)
+  where
+    p :: (Ringoid t) => t -> Poly String t
+    p = constPoly
 
 testEDoidPoly :: (RingoidArb t, CRingoidArb t, URingoidArb t, Canon t, Show t, Eq t) => t -> TestTree
-testEDoidPoly t = testEDoid (constPoly t)
+testEDoidPoly t = testEDoid (p t)
+  where
+    p :: (Ringoid t) => t -> Poly String t
+    p = constPoly
 
 
 {---------------}
@@ -71,7 +80,7 @@ varchar =
 var :: Gen String
 var = listOf1 $ elements varchar
 
-arbPowerOf :: Variable -> Gen (Monomial Variable)
+arbPowerOf :: Variable String -> Gen (Monomial (Variable String))
 arbPowerOf x = do
   k <- arbitrary
   return $ makeMonomial [(x, k)]
@@ -81,31 +90,31 @@ instance Arbitrary Natural where
     NonNegative k <- arbitrary
     return (Nat k)
 
-instance Arbitrary Variable where
+instance Arbitrary (Variable String) where
   arbitrary = do
     cs <- var
     return (Var cs)
 
-instance Arbitrary (Monomial Variable) where
+instance Arbitrary (Monomial (Variable String)) where
   arbitrary = do
     t  <- choose (1,5)
     xs <- vectorOf t arbitrary
     ks <- vectorOf t arbitrary
     return $ canon $ makeMonomial $ zip xs ks
 
-arbRingoidPoly :: (RingoidArb t) => t -> Gen (Poly t)
+arbRingoidPoly :: (RingoidArb t) => t -> Gen (Poly String t)
 arbRingoidPoly x = do
   t  <- choose (1, g_MAX_NUM_TERMS)
   cs <- rLocalElts x t
   xs <- vectorOf t arbitrary
   return $ fromTerms $ zip cs xs
 
-instance (Arbitrary a, RingoidArb a) => Arbitrary (Poly a) where
+instance (Arbitrary a, RingoidArb a) => Arbitrary (Poly String a) where
   arbitrary = do
     x  <- arbitrary
     arbRingoidPoly x
 
-instance (RingoidArb a, CRingoidArb a, Canon a, Eq a) => RingoidArb (Poly a) where
+instance (RingoidArb a, CRingoidArb a, Canon a, Eq a) => RingoidArb (Poly String a) where
   rAddAssoc _ = do
     x  <- arbitrary
     p1 <- arbRingoidPoly x
@@ -141,14 +150,14 @@ instance (RingoidArb a, CRingoidArb a, Canon a, Eq a) => RingoidArb (Poly a) whe
     return (p1, p2, p3)
 
 
-instance (RingoidArb a, CRingoidArb a) => CRingoidArb (Poly a) where
+instance (RingoidArb a, CRingoidArb a) => CRingoidArb (Poly String a) where
   rMulComm _ = do
     x  <- arbitrary
     p1 <- arbRingoidPoly x
     p2 <- arbRingoidPoly x
     return (p1, p2)
 
-instance (RingoidArb a, CRingoidArb a, URingoidArb a, Canon a, Eq a) => EDoidArb (Poly a) where
+instance (RingoidArb a, CRingoidArb a, URingoidArb a, Canon a, Eq a) => EDoidArb (Poly String a) where
   rQuotRem _ = do
     t  <- choose (1, g_MAX_NUM_TERMS)
     as <- vectorOf t arbitrary

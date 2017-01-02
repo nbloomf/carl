@@ -33,7 +33,7 @@ module Carl.Struct.Matrix (
 
   mIsRow, mIsCol,
 
-  mTranspose, mHCat, mVCat, mHCats, mVCats,
+  mTranspose, mHCat, mVCat, mBCat, mHCats, mVCats, mBCats,
 
   mSwapRows, mSwapCols, mDelRow, mDelCol,
 
@@ -341,9 +341,24 @@ mVCat a b = do
       let foo (i,j) = if i <= ra then (i,j) `mEntryOf` a else (i-ra,j) `mEntryOf` b
       mFromMapM (ra + rb, ca) foo
 
+mBCat :: (Ringoid a) => Matrix a -> Matrix a -> Either AlgErr (Matrix a)
+mBCat a Null = Right a
+mBCat Null b = Right b
+mBCat a b = do
+  (ra,ca) <- mDim a
+  (rb,cb) <- mDim b
+  za <- mConst (ra,cb) rZero
+  wa <- mHCat a za
+  zb <- mConst (rb,ca) rZero
+  wb <- mHCat zb b
+  mVCat wa wb
+
 mHCats, mVCats :: [Matrix a] -> Either AlgErr (Matrix a)
 mHCats = foldM mHCat Null
 mVCats = foldM mVCat Null
+
+mBCats :: (Ringoid a) => [Matrix a] -> Either AlgErr (Matrix a)
+mBCats = foldM mBCat Null
 
 -- Quadrant catenate
 mQCat :: ((Matrix a, Matrix a), (Matrix a, Matrix a)) -> Either AlgErr (Matrix a)

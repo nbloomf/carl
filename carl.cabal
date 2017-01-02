@@ -3,7 +3,7 @@ Version:        0.0.0
 Cabal-Version:  >= 1.2
 License:        GPL-3
 License-File:   LICENSE
-Copyright:      (c) 2015 Nathan Bloomfield
+Copyright:      (c) 2015, 2016 Nathan Bloomfield
 Author:         Nathan Bloomfield
 Synopsis:       A simple algebra library
 Stability:      Experimental
@@ -17,6 +17,7 @@ Library
     Carl.Data.Monomial,
     Carl.Data.Natural,
     Carl.Data.ZZMod,
+    Carl.Data.GF2,
     Carl.Algebra,
     Carl.Algebra.Group,
     Carl.Algebra.Ring,
@@ -43,8 +44,14 @@ Library
                   transformers, mtl, random, directory,
                   monadlist, primes, tostring
 
-Test-Suite carl-test
+Test-Suite carl-test-suite
   type:           exitcode-stdio-1.0
+  main-is:        Tests/Main.hs
+  hs-source-dirs: test/, src/
+  ghc-options:    -main-is Tests.Main -fforce-recomp
+  build-depends:  base, QuickCheck, tasty, tasty-quickcheck
+
+Executable carl-test-program
   main-is:        Tests/Main.hs
   hs-source-dirs: test/, src/
   ghc-options:    -main-is Tests.Main -fforce-recomp
